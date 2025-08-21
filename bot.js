@@ -7,7 +7,7 @@ import express from "express";
 dotenv.config();
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8443;
 app.use(express.json());
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
