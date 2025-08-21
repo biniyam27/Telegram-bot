@@ -61,7 +61,7 @@ async function generateTool() {
     const resp = await model.generateContent(
       `Recommend one useful full-stack dev tool with reason.`
     );
-    return resp.response.text();
+    return resp.response.text() + "\n 🧑‍💻Bina";
   } catch (err) {
     console.error("Gemini Tool Error:", err.message);
     return getRandom(fallbackTools);
@@ -88,8 +88,8 @@ bot.onText(/\/start/, (msg) => {
     🧑‍💻For More Information use this command \n 
        ${"/start"} For restart bot \n
        ${"/stop"} For stop or log out from bot \n
-       ${"/tip"} For additional tips \n
-       ${"/tool"} For additional tool recommendation \n
+       ${"/tip"} For coding tips \n
+       ${"/tool"} For tool recommendation \n
        ${"/about"} For about developer \n
        🥰Happy Coding! \n`.trim()
   );
@@ -125,13 +125,13 @@ bot.onText(/\/about/, (msg) => {
     chatId,
     `✅ I'm Binyam Tadele Full-Stack Web Developer,
      This Bot is support your coding journey,
-     \n you can Join my Telegram channel {"www.google.com"}
+     \n you can Join my Telegram channel t.me/aibina_tube
      Happy Coding!`
   );
 });
 
-// Daily job at 9 AM
-cron.schedule("0 9 * * *", async () => {
+// Daily job at 2 AM
+cron.schedule("0 23 * * *", async () => {
   const subs = getSubs();
   subs.forEach(async (id) => {
     const tip = await retry(generateTip, 3, 2000).catch((_) =>
@@ -147,6 +147,8 @@ cron.schedule("0 9 * * *", async () => {
       parse_mode: "Markdown",
     });
   });
+}, {
+  timezone: "Africa/Addis_Ababa"
 });
 
 console.log("🚀 Gemini-powered bot running!");
