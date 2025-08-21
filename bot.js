@@ -6,13 +6,13 @@ import express from "express";
 
 dotenv.config();
 const token = process.env.TELEGRAM_BOT_TOKEN;
-const gmApi = process.env.GEMINI_API_KEY;
+// const gmApi = process.env.GEMINI_API_KEY;
 const app = express();
 const PORT = process.env.PORT || 8443;
 app.use(express.json());
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
-const genAI = new GoogleGenerativeAI(gmApi);
+const genAI = new GoogleGenerativeAI("AIzaSyCPR4W2ciRhzf_Am1PVAbeIuUhRc4wQaEc");
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 // Telegram and DB setup
