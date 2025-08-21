@@ -2,6 +2,10 @@ import TelegramBot from "node-telegram-bot-api";
 import cron from "node-cron";
 import dotenv from "dotenv";
 import Database from "better-sqlite3";
+import express from "express";
+
+const app = express();
+const PORT = process.env.PORT || 3000;
 dotenv.config();
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -152,3 +156,14 @@ cron.schedule("0 23 * * *", async () => {
 });
 
 console.log("🚀 Gemini-powered bot running!");
+
+
+// Simple route to show bot status
+app.get("/", (req, res) => {
+  res.send("Telegram Bot is running ✅");
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+

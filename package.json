@@ -20,6 +20,6 @@
     "openai": "^5.15.0"
   },
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "node bot.js"
   }
 }
