@@ -164,7 +164,7 @@ cron.schedule(
 
 console.log("🚀 Gemini-powered bot running!");
 
-app.post(`/bot${token}`, (req, res) => {
+app.post(`/${token}`, (req, res) => {
   bot.processUpdate(req.body);
   res.sendStatus(200);
 });
@@ -174,6 +174,6 @@ app.get("/", (req, res) => {
   res.send("Telegram Bot is running ✅");
 });
 
-app.listen(PORT, () => {
+app.listen(PORT,'0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
