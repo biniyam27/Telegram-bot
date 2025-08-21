@@ -4,18 +4,21 @@ import dotenv from "dotenv";
 import Database from "better-sqlite3";
 import express from "express";
 
+dotenv.config();
+const token = process.env.TELEGRAM_BOT_TOKEN;
 const app = express();
 const PORT = process.env.PORT || 3000;
-dotenv.config();
+app.use(express.json());
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 // Telegram and DB setup
-const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, {
-  polling: true,
-});
+const bot = new TelegramBot(token, { webHook: true });
+const url = `https://your-render-app.onrender.com`;
+bot.setWebHook(`${url}/bot${token}`);
+
 const db = new Database("subs.db");
 db.prepare(
   "CREATE TABLE IF NOT EXISTS subs (chat_id INTEGER PRIMARY KEY)"
@@ -135,35 +138,42 @@ bot.onText(/\/about/, (msg) => {
 });
 
 // Daily job at 2 AM
-cron.schedule("0 23 * * *", async () => {
-  const subs = getSubs();
-  subs.forEach(async (id) => {
-    const tip = await retry(generateTip, 3, 2000).catch((_) =>
-      getRandom(fallbackTips)
-    );
-    const tool = await retry(generateTool, 3, 2000).catch((_) =>
-      getRandom(fallbackTools)
-    );
-    bot.sendMessage(id, `*Daily Full-Stack Tip*\n${tip}`, {
-      parse_mode: "Markdown",
+cron.schedule(
+  "0 23 * * *",
+  async () => {
+    const subs = getSubs();
+    subs.forEach(async (id) => {
+      const tip = await retry(generateTip, 3, 2000).catch((_) =>
+        getRandom(fallbackTips)
+      );
+      const tool = await retry(generateTool, 3, 2000).catch((_) =>
+        getRandom(fallbackTools)
+      );
+      bot.sendMessage(id, `*Daily Full-Stack Tip*\n${tip}`, {
+        parse_mode: "Markdown",
+      });
+      bot.sendMessage(id, `*Tool Recommendation*\n${tool}`, {
+        parse_mode: "Markdown",
+      });
     });
-    bot.sendMessage(id, `*Tool Recommendation*\n${tool}`, {
-      parse_mode: "Markdown",
-    });
-  });
-}, {
-  timezone: "Africa/Addis_Ababa"
-});
+  },
+  {
+    timezone: "Africa/Addis_Ababa",
+  }
+);
 
 console.log("🚀 Gemini-powered bot running!");
 
+app.post(`/bot${token}`, (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
+});
 
-// Simple route to show bot status
+// Simple route for health check
 app.get("/", (req, res) => {
   res.send("Telegram Bot is running ✅");
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
-
